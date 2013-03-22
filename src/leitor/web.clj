@@ -1,10 +1,17 @@
 (ns leitor.web
-  (:use (ring.adapter jetty)))
+  (:use
+    [compojure.core]
+    [ring.adapter.jetty :only [run-jetty]])
+  (:require
+    [compojure.route :as route]
+    [clostache.parser :as template]))
 
-(defn handler [request]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body "Hello World"})
+(defn index []
+  (template/render-resource "templates/index.mustache" {}))
+
+(defroutes app-routes
+  (GET "/" [] (index))
+  (route/resources "/"))
 
 (defn -main [& args]
-  (run-jetty handler {:port 8080}))
+  (run-jetty app-routes {:port 8080}))
